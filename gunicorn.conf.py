@@ -1,14 +1,8 @@
 import os
-
-# Cloud Run expõe a porta via variável de ambiente PORT
-bind = f"0.0.0.0:{os.environ.get('PORT', '8080')}"
-
-# Concurrency
+PORT = os.environ.get("PORT", "8080")
+bind = f"0.0.0.0:{PORT}"
 workers = 2
 threads = 4
-worker_class = "gthread"
 timeout = 120
-
-# (optional) log mais verboso p/ diagnosticar
-accesslog = "-"
-errorlog = "-"
+graceful_timeout = 30
+keepalive = 5
