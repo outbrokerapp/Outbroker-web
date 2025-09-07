@@ -1,0 +1,31 @@
+# Build + Deploy OutBroker Web
+substitutions:
+  _RUNTIME_SA: '${PROJECT_NUMBER}-compute@developer.gserviceaccount.com'
+  _SERVICE: 'outbroker-web'
+  _REGION: 'us-central1'
+  _CANONICAL: 'outbroker.app'
+
+steps:
+  # 1) Build com Buildpacks (gera a imagem do app)
+  - name: 'gcr.io/k8s-skaffold/pack'
+    args:
+      - 'build'
+      - 'gcr.io/${PROJECT_ID}/${_SERVICE}:${SHORT_SHA}'
+      - '--builder=gcr.io/buildpacks/builder'
+
+  # 2) Deploy no Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - '${_SERVICE}'
+      - '--image=gcr.io/${PROJECT_ID}/${_SERVICE}:${SHORT_SHA}'
+      - '--region=${_REGION}'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--service-account=${_RUNTIME_SA}'
+      - '--set-env-vars=CANONICAL_HOST=${_CANONICAL}'
+
+images:
+  - 'gcr.io/${PROJECT_ID}/${_SERVICE}:${SHORT_SHA}'
