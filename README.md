@@ -6,3 +6,4 @@ Aplicação Flask para OutBroker.
 - */form* → formulário simples para enviar leads pelo navegador.
 
 Deploy via Google Cloud Run.
+Mon Sep  8 10:39:45 PM UTC 2025
