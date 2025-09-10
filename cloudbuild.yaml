@@ -10,24 +10,14 @@ options:
   logging: CLOUD_LOGGING_ONLY
 
 steps:
-  # 1) Build com Buildpacks e envia para Artifact Registry
-  - name: gcr.io/k8s-skaffold/pack
-    args:
-      - build
-      - us-central1-docker.pkg.dev/$PROJECT_ID/$_REPO/$_SERVICE:$SHORT_SHA
-
-  # 2) Deploy no Cloud Run usando a imagem do Artifact Registry
-  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
-    entrypoint: gcloud
-    args:
-      - run
-      - deploy
-      - $_SERVICE
-      - --image=us-central1-docker.pkg.dev/$PROJECT_ID/$_REPO/$_SERVICE:$SHORT_SHA
-      - --region=$_REGION
-      - --platform=managed
-      - --allow-unauthenticated
-      - --set-env-vars=CANONICAL_HOST=$_CANONICAL
-
-images:
-  - us-central1-docker.pkg.dev/$PROJECT_ID/$_REPO/$_SERVICE:$SHORT_SHA
+  # 1 Build da imagem com Buildpacks (publica direto no Artifact Registry)
+- id: Build image
+  name: gcr.io/k8s-skaffold/pack
+  entrypoint: bash
+  args:
+    - -c
+    - |
+      set -e
+      pack version
+      pack config default-builder gcr.io/buildpacks/builder:latest
+      pack build "us-central1-docker.pkg.dev/$PROJECT_ID/$_REPO/$_SERVICE:$SHORT_SHA" --builder gcr.io/buildpacks/builder:latest --publish
