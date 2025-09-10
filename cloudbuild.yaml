@@ -35,5 +35,5 @@ steps:
       - --set-env-vars
       - CANONICAL_HOST=$_CANONICAL
 
-images:
-  - us-central1-docker.pkg.dev/$PROJECT_ID/$_REPO/$_SERVICE:$SHORT_SHA
+--allow-unauthenticated
+      --set-env-vars=CANONICAL_HOST=$_CANONICAL
